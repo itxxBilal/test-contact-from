@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form with Profile Pic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-md w-96">
+        <h2 class="text-2xl font-semibold text-center mb-4">Contact Us</h2>
+        <form id="contactForm" enctype="multipart/form-data">
+            <label class="block mb-2">Profile Picture:</label>
+            <input type="file" id="profilePic" name="profilePic" accept="image/*" class="block w-full mb-4 border p-2 rounded" required>
+
+            <label class="block mb-2">Name:</label>
+            <input type="text" id="name" name="name" class="block w-full mb-4 border p-2 rounded" required>
+
+            <label class="block mb-2">Email:</label>
+            <input type="email" id="email" name="email" class="block w-full mb-4 border p-2 rounded" required>
+
+            <label class="block mb-2">Message:</label>
+            <textarea id="message" name="message" class="block w-full mb-4 border p-2 rounded" required></textarea>
+
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+                Submit
+            </button>
+        </form>
+
+        <p id="responseMsg" class="mt-4 text-center text-green-600 hidden"></p>
+
+        <a href="/dashboard" class="block text-center mt-4 text-blue-500">Go to Dashboard</a>
+    </div>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+            
+            let response = await fetch('/api/contact', {
+                method: 'POST',
+                body: formData
+            });
+
+            let result = await response.json();
+            document.getElementById("responseMsg").innerText = result.message;
+            document.getElementById("responseMsg").classList.remove("hidden");
+            this.reset();
+        });
+    </script>
+</body>
+</html>
