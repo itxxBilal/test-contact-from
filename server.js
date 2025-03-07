@@ -6,16 +6,16 @@ const fs = require("fs");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, "uploads");
+// Use /tmp for uploads in Vercel
+const uploadDir = path.join("/tmp", "uploads");
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+    fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/");
+        cb(null, uploadDir); // Use /tmp/uploads
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 // Contact Form API
 app.post("/api/contact", upload.single("profilePic"), (req, res) => {
     const { name, email, message } = req.body;
-    const profilePic = req.file ? `/uploads/${req.file.filename}` : null;
+    const profilePic = req.file ? `${uploadDir}/${req.file.filename}` : null;
 
     const contactData = { name, email, message, profilePic };
     contacts.push(contactData);
@@ -47,9 +47,6 @@ app.post("/api/contact", upload.single("profilePic"), (req, res) => {
 app.get("/api/contacts", (req, res) => {
     res.json(contacts);
 });
-
-// Serve uploaded images
-app.use("/uploads", express.static("uploads"));
 
 // Serve dashboard page
 app.get("/dashboard", (req, res) => {
