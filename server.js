@@ -47,6 +47,11 @@ app.post("/api/contact", upload.single("profilePic"), (req, res) => {
 app.get("/api/contacts", (req, res) => {
     res.json(contacts);
 });
+// Serve index.html on root ("/")
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 
 // Serve dashboard page
 app.get("/dashboard", (req, res) => {
